@@ -84,7 +84,7 @@ const Aside = () => {
             </button> */}
 
             {/* Sidebar Items */}
-            <nav className="flex flex-col space-y-2 text-[12px] font-bold">
+            <nav className="flex flex-col pt-15 space-y-2 text-[12px] font-bold">
                 {menuItems.map((item) => (
                     <div key={item.id}>
                         <SidebarItem

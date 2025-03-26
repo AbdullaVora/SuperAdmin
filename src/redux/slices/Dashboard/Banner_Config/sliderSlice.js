@@ -63,7 +63,8 @@ const initialState = {
   sliders: [],
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
-  currentSlider: null
+  currentSlider: null,
+  loading: false,
 };
 
 const sliderSlice = createSlice({
@@ -85,35 +86,43 @@ const sliderSlice = createSlice({
     builder
       // Fetch sliders
       .addCase(fetchSliders.pending, (state) => {
+        state.loading = true;
         state.status = 'loading';
       })
       .addCase(fetchSliders.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = 'succeeded';
         state.sliders = action.payload;
       })
       .addCase(fetchSliders.rejected, (state, action) => {
+        state.loading = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to fetch sliders';
       })
       
       // Add slider
       .addCase(addSlider.pending, (state) => {
+        state.loading = true;
         state.status = 'loading';
       })
       .addCase(addSlider.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = 'succeeded';
         state.sliders.push(action.payload.data);
       })
       .addCase(addSlider.rejected, (state, action) => {
+        state.loading = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to add slider';
       })
       
       // Update slider
       .addCase(updateSlider.pending, (state) => {
+        state.loading = true;
         state.status = 'loading';
       })
       .addCase(updateSlider.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = 'succeeded';
         const index = state.sliders.findIndex(slider => slider.id === action.payload.id);
         if (index !== -1) {
@@ -121,19 +130,23 @@ const sliderSlice = createSlice({
         }
       })
       .addCase(updateSlider.rejected, (state, action) => {
+        state.loading = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to update slider';
       })
       
       // Delete slider
       .addCase(deleteSlider.pending, (state) => {
+        state.loading = true;
         state.status = 'loading';
       })
       .addCase(deleteSlider.fulfilled, (state, action) => {
+        state.loading = false;
         state.status = 'succeeded';
         state.sliders = state.sliders.filter(slider => slider.id !== action.payload);
       })
       .addCase(deleteSlider.rejected, (state, action) => {
+        state.loading = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to delete slider';
       });

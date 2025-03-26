@@ -14,7 +14,7 @@ const SocialLinks = () => {
 
     const dispatch = useDispatch();
 
-    const { socialLinks, loading, error } = useSelector((state) => state.socialLinks);
+    const { socialLinks, loading: socialLoading, error } = useSelector((state) => state.socialLinks);
     // console.log(paymentMethods)
 
     useEffect(() => {
@@ -75,7 +75,13 @@ const SocialLinks = () => {
             });
     };
 
-
+    if (socialLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex bg-gray-100 custom-container">
@@ -98,8 +104,8 @@ const SocialLinks = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading social links...</p>
+                        {socialLoading ? (
+                            <p>{socialLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (
@@ -110,7 +116,7 @@ const SocialLinks = () => {
                 {/* Add Slider Modal */}
                 {isModalOpen && <SocialLinksModel onClose={() => setIsModalOpen(false)} isEdit={isEdit} EditData={EditData} />}
             </div>
-            <ToastContainer/>
+            <ToastContainer />
         </div>
     )
 }

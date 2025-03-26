@@ -16,7 +16,7 @@ const Variants = () => {
     const dispatch = useDispatch();
 
     // Get categories from Redux store
-    const { variants, loading, error } = useSelector((state) => state.variants);
+    const { variants, loading: variantLoading, error } = useSelector((state) => state.variants);
 
     // Fetch categories when component mounts
     useEffect(() => {
@@ -68,20 +68,26 @@ const Variants = () => {
         }
     };
 
-     const onDelete = (id) => {
-            dispatch(deleteVariant(id))
-                .then(() => {
-                    toast.success("Variants deleted successfully!");
-                    console.log("Variants deleted successfully!");
-                    dispatch(fetchVariants());
-                })
-                .catch((error) => {
-                    toast.error(error.message);
-                    console.error("Error deleting Variants:", error);
-                });
-        };
-    
+    const onDelete = (id) => {
+        dispatch(deleteVariant(id))
+            .then(() => {
+                toast.success("Variants deleted successfully!");
+                console.log("Variants deleted successfully!");
+                dispatch(fetchVariants());
+            })
+            .catch((error) => {
+                toast.error(error.message);
+                console.error("Error deleting Variants:", error);
+            });
+    };
 
+    if (variantLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex bg-gray-100 custom-container">
@@ -104,8 +110,8 @@ const Variants = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading categories...</p>
+                        {variantLoading ? (
+                            <p>{variantLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

@@ -14,7 +14,7 @@ const ShippingPartners = () => {
 
     const dispatch = useDispatch();
 
-    const { shippingPartners, loading, error } = useSelector((state) => state.shippingPartners);
+    const { shippingPartners, loading: shippingLoading, error } = useSelector((state) => state.shippingPartners);
     // console.log(paymentMethods)
 
     useEffect(() => {
@@ -75,6 +75,14 @@ const ShippingPartners = () => {
             });
     };
 
+    if (shippingLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
+
 
     return (
         <div className="flex bg-gray-100 custom-container">
@@ -97,8 +105,8 @@ const ShippingPartners = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading shipping partners...</p>
+                        {shippingLoading ? (
+                            <p>{shippingLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

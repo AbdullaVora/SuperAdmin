@@ -24,7 +24,7 @@ const Coupon = () => {
     dispatch(fetchCoupons());
   }, [dispatch]);
 
-  const { coupons, loading, error } = useSelector((state) => state.coupons);
+  const { coupons, loading: CouponLoading, error } = useSelector((state) => state.coupons);
 
   console.log(coupons)
 
@@ -86,6 +86,14 @@ const Coupon = () => {
       });
   };
 
+  if (CouponLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span class="loader"></span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex bg-gray-100 custom-container">
       <div className="flex-1 flex flex-col">
@@ -103,8 +111,8 @@ const Coupon = () => {
           </div>
           <div className="py-3">
             {/* <h2 className="text-xl font-bold mb-2">Recent Sliders</h2> */}
-            {loading ? (
-              <p>Loading sliders...</p>
+            {CouponLoading ? (
+              <p>{CouponLoading}</p>
             ) : error ? (
               <p className="text-red-500">Error: {error}</p>
             ) : (

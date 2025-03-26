@@ -15,7 +15,7 @@ const Category = () => {
     const dispatch = useDispatch();
 
     // Get categories from Redux store
-    const { categories, loading, error } = useSelector((state) => state.categories);
+    const { categories, loading: categoryLoading, error } = useSelector((state) => state.categories);
     console.log(categories);
 
     // Fetch categories when component mounts
@@ -83,6 +83,13 @@ const Category = () => {
             });
     };
 
+    if (categoryLoading) {
+        return (
+          <div className="flex justify-center items-center h-screen">
+            <span class="loader"></span>
+          </div>
+        );
+      }
 
 
     return (
@@ -106,8 +113,8 @@ const Category = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading categories...</p>
+                        {categoryLoading ? (
+                            <p>{categoryLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

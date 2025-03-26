@@ -15,7 +15,7 @@ const OrderStatus = () => {
     const dispatch = useDispatch();
 
     // Get orderStatus from Redux store
-    const { orderStatus, loading, error } = useSelector((state) => state.orderStatus);
+    const { orderStatus, loading: orderLoading, error } = useSelector((state) => state.orderStatus);
     console.log(orderStatus)
 
     // Fetch categories when component mounts
@@ -80,6 +80,14 @@ const OrderStatus = () => {
             });
     };
 
+    if (orderLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
+
 
     return (
         <div className="flex bg-gray-100 custom-container">
@@ -102,8 +110,8 @@ const OrderStatus = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading sliders...</p>
+                        {orderLoading ? (
+                            <p>{orderLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

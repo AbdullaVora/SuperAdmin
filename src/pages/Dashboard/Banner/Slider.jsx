@@ -23,7 +23,7 @@ const Slider = () => {
         dispatch(fetchSliders());
     }, [dispatch]);
 
-    const { sliders, loading, error } = useSelector((state) => state.sliders);
+    const { sliders, loading: sliderLoading, error } = useSelector((state) => state.sliders);
     // console.log(sliders)
 
     const onEdit = (id) => {
@@ -81,6 +81,13 @@ const Slider = () => {
             });
     };
 
+    if (sliderLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex bg-gray-100 custom-container">
@@ -104,8 +111,8 @@ const Slider = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading sliders...</p>
+                        {sliderLoading ? (
+                            <p>{sliderLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

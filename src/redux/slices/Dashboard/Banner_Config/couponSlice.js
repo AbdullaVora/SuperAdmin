@@ -63,7 +63,8 @@ const initialState = {
   coupons: [],
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
-  currentCoupon: null
+  currentCoupon: null,
+  laoding: false
 };
 
 // ✅ Slice Creation
@@ -86,35 +87,43 @@ const couponSlice = createSlice({
     builder
       // Fetch Coupons
       .addCase(fetchCoupons.pending, (state) => {
+        state.laoding = true;
         state.status = 'loading';
       })
       .addCase(fetchCoupons.fulfilled, (state, action) => {
+        state.laoding = false;
         state.status = 'succeeded';
         state.coupons = action.payload;
       })
       .addCase(fetchCoupons.rejected, (state, action) => {
+        state.laoding = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to fetch coupons';
       })
       
       // Add Coupon
       .addCase(addCoupon.pending, (state) => {
+        state.laoding = true;
         state.status = 'loading';
       })
       .addCase(addCoupon.fulfilled, (state, action) => {
+        state.laoding = false;
         state.status = 'succeeded';
         state.coupons.push(action.payload);
       })
       .addCase(addCoupon.rejected, (state, action) => {
+        state.laoding = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to add coupon';
       })
       
       // Update Coupon
       .addCase(updateCoupon.pending, (state) => {
+        state.laoding = true;
         state.status = 'loading';
       })
       .addCase(updateCoupon.fulfilled, (state, action) => {
+        state.laoding = false;
         state.status = 'succeeded';
         const index = state.coupons.findIndex(coupon => coupon._id === action.payload._id);
         if (index !== -1) {
@@ -122,19 +131,23 @@ const couponSlice = createSlice({
         }
       })
       .addCase(updateCoupon.rejected, (state, action) => {
+        state.laoding = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to update coupon';
       })
       
       // Delete Coupon
       .addCase(deleteCoupon.pending, (state) => {
+        state.laoding = true;
         state.status = 'loading';
       })
       .addCase(deleteCoupon.fulfilled, (state, action) => {
+        state.laoding = false;
         state.status = 'succeeded';
         state.coupons = state.coupons.filter(coupon => coupon._id !== action.payload);
       })
       .addCase(deleteCoupon.rejected, (state, action) => {
+        state.laoding = false;
         state.status = 'failed';
         state.error = action.payload || 'Failed to delete coupon';
       });

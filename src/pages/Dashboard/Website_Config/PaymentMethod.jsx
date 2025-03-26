@@ -15,7 +15,7 @@ const PaymentMethod = () => {
 
     const dispatch = useDispatch();
 
-    const { paymentMethods, loading, error } = useSelector((state) => state.paymentMethods);
+    const { paymentMethods, loading: paymentLoading, error } = useSelector((state) => state.paymentMethods);
     // console.log(paymentMethods)
 
     useEffect(() => {
@@ -79,6 +79,14 @@ const PaymentMethod = () => {
             });
     };
 
+    if (paymentLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <span class="loader"></span>
+            </div>
+        );
+    }
+
     return (
         <div className="flex bg-gray-100 custom-container">
             <div className="flex-1 flex flex-col">
@@ -100,8 +108,8 @@ const PaymentMethod = () => {
                         </button> */}
                     </div>
                     <div className="py-3">
-                        {loading ? (
-                            <p>Loading payment methods...</p>
+                        {paymentLoading ? (
+                            <p>{paymentLoading}</p>
                         ) : error ? (
                             <p className="text-red-500">Error: {error}</p>
                         ) : (

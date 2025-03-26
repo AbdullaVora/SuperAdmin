@@ -79,9 +79,9 @@ const Aside = () => {
         <aside className={`bg-black fixed top-[7%] text-white h-screen ${isExpanded ? "w-56 me-[220px]" : "w-20"} transition-all duration-300 p-4 flex flex-col overflow-y-auto`}>
 
             {/* Sidebar Toggle */}
-            <button className={`text-white text-xl mt-2 ${!isExpanded ? 'ms-3' : ''} mb-6`} onClick={() => setIsExpanded(!isExpanded)}>
+            {/* <button className={`text-white text-xl mt-2 ${!isExpanded ? 'ms-3' : ''} mb-6`} onClick={() => setIsExpanded(!isExpanded)}>
                 <FaBars />
-            </button>
+            </button> */}
 
             {/* Sidebar Items */}
             <nav className="flex flex-col space-y-2 text-[12px] font-bold">

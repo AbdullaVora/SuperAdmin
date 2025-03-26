@@ -574,7 +574,7 @@ const Products = () => {
     }
 
     return (
-        <div className="flex bg-gray-100 h-screen custom-container">
+        <div className="flex bg-gray-100 custom-container">
             <div className="flex flex-col bg-gray-100 w-full">
                 {/* Header */}
                 <header className="bg-orange-500 text-white px-6 py-4">
@@ -774,7 +774,7 @@ const Products = () => {
                                                 <img
                                                     src={product.thumbnail}
                                                     alt={product.name}
-                                                    className=" w-full h-full object-contain overflow-hidden transform group-hover:scale-110 transition-transform duration-500 ease-out"
+                                                    className=" w-full h-full object-contain p-5 overflow-hidden transform group-hover:scale-110 transition-transform duration-500 ease-out"
                                                 />
                                             </div>
                                             <div className="p-4 border-t flex-grow flex flex-col">

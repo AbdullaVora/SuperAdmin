@@ -110,7 +110,7 @@ const Coupon = () => {
             </button>
           </div>
           <div className="py-3">
-            {/* <h2 className="text-xl font-bold mb-2">Recent Sliders</h2> */}
+            {/* <h2 className="text-xl font-bold mb-2">R  ecent Sliders</h2> */}
             {CouponLoading ? (
               <p>{CouponLoading}</p>
             ) : error ? (

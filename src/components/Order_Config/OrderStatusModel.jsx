@@ -15,16 +15,23 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
 
     const statusOptions = ["Pending", "In Progress", "Complete", "Cancelled"];
 
-    // Fetch Order Statuses when component mounts
-    useEffect(() => {
-        dispatch(fetchOrderStatus());
-    }, [dispatch]);
+    // // Fetch Order Statuses when component mounts
+    // useEffect(() => {
+    //     dispatch(fetchOrderStatus());
+    // }, [dispatch]);\
 
-    console.log(EditData)
+    // useEffect(() => {
+    //     if()
+    //     dispatch(fetchOrderStatus());
+    // }, [dispatch]);
+
+    // console.log(EditData)
 
     // Set form values when EditData is available
     useEffect(() => {
         if (isEdit && EditData) {
+            console.log(EditData)
+
             setorderStatusCode(EditData.orderCode || "");
             setorderStatusName(EditData.orderName || "");
             setorderStatus(EditData.orderStatus || "");
@@ -121,7 +128,7 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
 
                 {/* orderStatus Status (Dropdown) */}
                 <label className="block mb-2 font-medium text-[#0B0F19] mt-3">
-                    Order Status Status <span className="text-red-500">*</span>
+                    Order Status <span className="text-red-500">*</span>
                 </label>
                 <select
                     className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#F77F00]"

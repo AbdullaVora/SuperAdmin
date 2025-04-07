@@ -269,10 +269,17 @@ const CategoryModel = ({ onClose, EditData, isEdit }) => {
     const [categoryDescription, setCategoryDescription] = useState("");
     const [parentCategory, setParentCategory] = useState("N/A");
 
-    // Fetch categories from Redux when component mounts
+    // // Fetch categories from Redux when component mounts
+    // useEffect(() => {
+    //     dispatch(fetchCategories());
+    // }, [dispatch]);
+
     useEffect(() => {
-        dispatch(fetchCategories());
-    }, [dispatch]);
+        if (!categories.length) { // Fetch only if variants are empty
+            dispatch(fetchCategories());
+        }
+    }, [dispatch, categories]);
+
 
     // Set form values when EditData is available
     useEffect(() => {

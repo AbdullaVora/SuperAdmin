@@ -909,7 +909,10 @@ const Addproduct = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
+  const [main, setMain] = useState(null);
   const [description, setDescription] = useState('');
+  const [forPage, setForPage] = useState(null);
+  const [forSection, setForSection] = useState(null);
 
   // State for details and additional rows
   const [details, setDetails] = useState([{ title: '', value: '' }]);
@@ -931,6 +934,30 @@ const Addproduct = () => {
   const { variants } = useSelector((state) => state.variants);
   const { products } = useSelector((state) => state.products);
   const { brands } = useSelector((state) => state.brand);
+
+  // Define page and section options
+  const pageSectionMap = {
+    Home: ["New Arrival", "Our Products"],
+    Collection: ["Banner", "Products"],
+    Blog: ["Banner", "Blogs"],
+    About: ["Banner", "Main"]
+  };
+
+  const pageOptions = Object.keys(pageSectionMap);
+
+  const handlePageChange = (value) => {
+    setForPage(value);
+    setForSection(""); // Reset section when page changes
+  };
+
+  const handleSectionChange = (value) => {
+    setForSection(value);
+  }
+
+  const getSectionOptions = () => {
+    console.log(forPage)
+    return forPage ? pageSectionMap[forPage] || [] : [];
+  };
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -990,6 +1017,8 @@ const Addproduct = () => {
     setSkuCode(data.skuCode || '');
     setSelectedCategory(data.category.name || '');
     setSelectedBrandCategory(data.brandCategory.name || '');
+    setForPage(data.forPage || '');
+    setForSection(data.forSection || '');
     setSelectedBrand(data.brand.name || ''); // Load brand
     setSelectedSubcategory(data.subcategory.name || '');
     setDescription(data.description || '');
@@ -1012,6 +1041,7 @@ const Addproduct = () => {
     setMrp(data.mrp || 0);
     setPrice(data.price || 0);
     setDiscount(data.discount || 0);
+    setMain(data.main || null);
     setStockManagement(data.stockManagement || false);
     setThumbnail(data.thumbnail || null);
     setImages(data.images || []);
@@ -1106,6 +1136,86 @@ const Addproduct = () => {
     setSelectedVariants(newVariants);
   };
 
+  // // Convert file to base64
+  // const convertToBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const fileReader = new FileReader();
+  //     fileReader.readAsDataURL(file);
+  //     fileReader.onload = () => {
+  //       resolve(fileReader.result);
+  //     };
+  //     fileReader.onerror = (error) => {
+  //       reject(error);
+  //     };
+  //   });
+  // };
+
+  // const handleThumbnailUpload = async (file) => {
+  //   try {
+  //     if (typeof file === 'string') {
+  //       setThumbnail(file);
+  //     } else if (file) {
+  //       const base64 = await convertToBase64(file);
+  //       setThumbnail(base64);
+  //     } else {
+  //       setThumbnail(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error processing thumbnail:", error);
+  //     toast.error("Failed to process thumbnail image");
+  //   }
+  // };
+
+  // const handleMainUpload = async (file) => {
+  //   try {
+  //     if (typeof file === 'string') {
+  //       setMain(file);
+  //     } else if (file) {
+  //       const base64 = await convertToBase64(file);
+  //       setMain(base64);
+  //     } else {
+  //       setMain(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error processing main:", error);
+  //     toast.error("Failed to process main image");
+  //   }
+  // };
+
+  // // Handle image upload
+  // const handleImageUpload = async (e) => {
+  //   try {
+  //     const files = Array.from(e.target.files);
+  //     const base64Images = [];
+
+  //     for (const file of files) {
+  //       const base64 = await convertToBase64(file);
+  //       base64Images.push(base64);
+  //     }
+
+  //     setImages([...images, ...base64Images]);
+  //   } catch (error) {
+  //     console.error("Error converting images to base64:", error);
+  //     toast.error("Failed to process images");
+  //   }
+  // };
+
+  // // Remove an image
+  // const removeImage = (index) => {
+  //   const newImages = [...images];
+  //   newImages.splice(index, 1);
+  //   setImages(newImages);
+
+  //   // If the removed image was the thumbnail, clear the thumbnail
+  //   if (thumbnail === images[index]) {
+  //     setThumbnail(null);
+  //   }
+
+  //   if (main === images[index]) {
+  //     setMain(null);
+  //   }
+  // };
+
   // Convert file to base64
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -1122,17 +1232,45 @@ const Addproduct = () => {
 
   const handleThumbnailUpload = async (file) => {
     try {
+      let imageUrl;
       if (typeof file === 'string') {
-        setThumbnail(file);
+        imageUrl = file;
       } else if (file) {
-        const base64 = await convertToBase64(file);
-        setThumbnail(base64);
+        imageUrl = await convertToBase64(file);
       } else {
         setThumbnail(null);
+        return;
       }
+
+      setThumbnail(imageUrl);
+
+      // Remove from images array if it exists there
+      setImages(prev => prev.filter(img => img !== imageUrl));
     } catch (error) {
       console.error("Error processing thumbnail:", error);
       toast.error("Failed to process thumbnail image");
+    }
+  };
+
+  const handleMainUpload = async (file) => {
+    try {
+      let imageUrl;
+      if (typeof file === 'string') {
+        imageUrl = file;
+      } else if (file) {
+        imageUrl = await convertToBase64(file);
+      } else {
+        setMain(null);
+        return;
+      }
+
+      setMain(imageUrl);
+
+      // Remove from images array if it exists there
+      setImages(prev => prev.filter(img => img !== imageUrl));
+    } catch (error) {
+      console.error("Error processing main:", error);
+      toast.error("Failed to process main image");
     }
   };
 
@@ -1144,7 +1282,10 @@ const Addproduct = () => {
 
       for (const file of files) {
         const base64 = await convertToBase64(file);
-        base64Images.push(base64);
+        // Only add to images array if not already thumbnail or main
+        if (base64 !== thumbnail && base64 !== main) {
+          base64Images.push(base64);
+        }
       }
 
       setImages([...images, ...base64Images]);
@@ -1156,13 +1297,17 @@ const Addproduct = () => {
 
   // Remove an image
   const removeImage = (index) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
+    const imageToRemove = images[index];
+    const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
 
     // If the removed image was the thumbnail, clear the thumbnail
-    if (thumbnail === images[index]) {
+    if (thumbnail === imageToRemove) {
       setThumbnail(null);
+    }
+
+    if (main === imageToRemove) {
+      setMain(null);
     }
   };
 
@@ -1186,6 +1331,12 @@ const Addproduct = () => {
       return;
     }
 
+    // Validate main is selected
+    if (!main) {
+      toast.error("Please select a main image");
+      return;
+    }
+
     const formData = {
       name,
       slug,
@@ -1203,7 +1354,10 @@ const Addproduct = () => {
       stockManagement,
       variants: selectedVariants,
       images,
-      thumbnail
+      thumbnail,
+      main,
+      forPage,
+      forSection
     };
 
     if (isEditing && editData?._id) {
@@ -1235,6 +1389,8 @@ const Addproduct = () => {
   //   const variant = variants.find(v => v.id === id);
   //   return variant ? variant.name : 'N/A';
   // };
+
+
 
   return (
     <div className="flex bg-gray-100 custom-container">
@@ -1426,7 +1582,35 @@ const Addproduct = () => {
                         </select>
                       </div>
                     )}
-
+                  </div>
+                  <div className="flex space-x-4">
+                    <div className="w-1/2">
+                      <label className="text-gray-500 text-sm block font-medium mb-1">For Which Page *</label>
+                      <select
+                        className="border border-gray-300 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-orange-500 px-3 py-2"
+                        value={forPage}
+                        onChange={(e) => handlePageChange(e.target.value)}
+                      >
+                        <option value="">Select Page</option>
+                        {pageOptions.map((page, index) => (
+                          <option key={index} value={page}>{page}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="w-1/2">
+                      <label className="text-gray-500 text-sm block font-medium mb-1">For Which Section *</label>
+                      <select
+                        className="border border-gray-300 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-orange-500 px-3 py-2"
+                        value={forSection}
+                        onChange={(e) => handleSectionChange(e.target.value)}
+                        disabled={!forPage}
+                      >
+                        <option value="">Select Section</option>
+                        {getSectionOptions().map((section, index) => (
+                          <option key={index} value={section}>{section}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -1828,8 +2012,8 @@ const Addproduct = () => {
               </div>
 
               {/* Right Side - Image Upload Area */}
-              <div className="flex-1 pe-6 py-6">
-                {/* Thumbnail Preview (if exists) */}
+              {/* <div className="flex-1 pe-6 py-6">
+
                 {thumbnail && (
                   <div className="mb-6">
                     <h3 className="text-gray-700 text-lg font-medium mb-2">Thumbnail Preview</h3>
@@ -1837,7 +2021,7 @@ const Addproduct = () => {
                       <img
                         src={thumbnail}
                         alt="Thumbnail preview"
-                        className="w-[200px] h-[300px] rounded-lg w-full object-cover"
+                        className="w-[200px] h-[300px] rounded-lg object-cover"
                       />
                       <button
                         onClick={() => setThumbnail(null)}
@@ -1849,7 +2033,6 @@ const Addproduct = () => {
                   </div>
                 )}
 
-                {/* Image Preview Grid */}
                 <h3 className="text-gray-700 text-lg font-medium mb-2">Product Images</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {images.map((image, index) => (
@@ -1878,6 +2061,166 @@ const Addproduct = () => {
                     </div>
                   ))}
                 </div>
+              </div> */}
+              {/* <div className="flex-1 pe-6 py-6">
+
+                {thumbnail && (
+                  <div className="mb-6">
+                    <h3 className="text-gray-700 text-lg font-medium mb-2">Thumbnail Preview</h3>
+                    <div className="border border-gray-200 p-4 rounded-lg relative w-[500px]">
+                      <img
+                        src={thumbnail}
+                        alt="Thumbnail preview"
+                        className="w-[500px] h-[200px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => setThumbnail(null)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                      >
+                        <IoMdClose size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {main && (
+                  <div className="mb-6">
+                    <h3 className="text-gray-700 text-lg font-medium mb-2">Main Image Preview</h3>
+                    <div className="border border-gray-200 p-4 rounded-lg relative w-[500px]">
+                      <img
+                        src={main}
+                        alt="Main image preview"
+                        className="w-[500px] h-[200px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => setMain(null)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                      >
+                        <IoMdClose size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <h3 className="text-gray-700 text-lg font-medium mb-2">Product Images</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="border border-gray-200 p-4 rounded-lg relative">
+                      <div className="aspect-h-9 aspect-w-16 mb-2">
+                        <img
+                          src={image}
+                          alt="Product preview"
+                          className="h-48 rounded-lg w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-wrap justify-between items-center gap-2">
+                        <button
+                          onClick={() => removeImage(index)}
+                          className="text-red-600 text-sm hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleThumbnailUpload(image)}
+                            className={`text-sm px-2 py-1 rounded ${thumbnail === image ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                          >
+                            {thumbnail === image ? 'Thumbnail' : 'Set as Thumbnail'}
+                          </button>
+                          <button
+                            onClick={() => handleMainUpload(image)}
+                            className={`text-sm px-3 py-1 rounded ${main === image ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                          >
+                            {main === image ? 'Main Image' : 'Set as Main'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div> */}
+              <div className="flex-1 pe-6 py-6">
+                {/* Thumbnail Preview (if exists) */}
+                {thumbnail && (
+                  <div className="mb-6">
+                    <h3 className="text-gray-700 text-lg font-medium mb-2">Thumbnail Preview</h3>
+                    <div className="border border-gray-200 p-4 rounded-lg relative w-[500px]">
+                      <img
+                        src={thumbnail}
+                        alt="Thumbnail preview"
+                        className="w-[500px] h-[200px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => setThumbnail(null)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                      >
+                        <IoMdClose size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Main Image Preview (if exists) */}
+                {main && main !== thumbnail && (
+                  <div className="mb-6">
+                    <h3 className="text-gray-700 text-lg font-medium mb-2">Main Image Preview</h3>
+                    <div className="border border-gray-200 p-4 rounded-lg relative w-[500px]">
+                      <img
+                        src={main}
+                        alt="Main image preview"
+                        className="w-[500px] h-[200px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => setMain(null)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                      >
+                        <IoMdClose size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Additional Images Grid */}
+                <h3 className="text-gray-700 text-lg font-medium mb-2">Additional Images</h3>
+                {images.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {images.map((image, index) => (
+                      <div key={index} className="border border-gray-200 p-4 rounded-lg relative">
+                        <div className="aspect-h-9 aspect-w-16 mb-2">
+                          <img
+                            src={image}
+                            alt="Product preview"
+                            className="h-48 rounded-lg w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-wrap justify-between items-center gap-2">
+                          <button
+                            onClick={() => removeImage(index)}
+                            className="text-red-600 text-sm hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleThumbnailUpload(image)}
+                              className={`text-sm px-2 py-1 rounded ${thumbnail === image ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                            >
+                              {thumbnail === image ? 'Thumbnail' : 'Set as Thumbnail'}
+                            </button>
+                            <button
+                              onClick={() => handleMainUpload(image)}
+                              className={`text-sm px-3 py-1 rounded ${main === image ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                            >
+                              {main === image ? 'Main Image' : 'Set as Main'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No additional images uploaded yet</p>
+                )}
               </div>
             </div>
           </div>

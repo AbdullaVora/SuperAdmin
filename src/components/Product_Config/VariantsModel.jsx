@@ -89,10 +89,16 @@ const VariantsModel = ({ onClose, EditData, isEdit }) => {
     const [variantDescription, setVariantDescription] = useState("");
     const [parentVariant, setParentVariant] = useState("N/A");
 
-    // Fetch Variants from Redux when component mounts
+    // // Fetch Variants from Redux when component mounts
+    // useEffect(() => {
+    //     dispatch(fetchVariants());
+    // }, [dispatch]);
+
     useEffect(() => {
-        dispatch(fetchVariants());
-    }, [dispatch]);
+        if (!variants.length) { // Fetch only if variants are empty
+            dispatch(fetchVariants());
+        }
+    }, [dispatch, variants]);
 
     // Set form values when EditData is available
     useEffect(() => {

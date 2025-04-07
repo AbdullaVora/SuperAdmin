@@ -8,6 +8,10 @@
   top: 120px !important; /* Set custom top position */
 }
 
+body{
+  background-color: #f3f4f6 !important;
+}
+
 .loader {
   transform: rotateZ(45deg);
   perspective: 1000px;

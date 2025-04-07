@@ -1,10 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaHome, FaBox, FaUsers, FaCog, FaChartPie, FaCartArrowDown } from "react-icons/fa";
 import Table from "../../../components/Table";
 import orders from "../../../../data/order.json"
-import users from "../../../../data/user.json"
+// import users from "../../../../data/user.json"
+import { useDispatch, useSelector } from "react-redux";
+import { getUsers } from "../../../redux/slices/auth/userSlice";
+import { fetchOrderStatus } from "../../../redux/slices/Dashboard/Order_Config/orderStatusSlice";
 
 const Home = () => {
+
+  const dispatch = useDispatch()
+
+  const { users } = useSelector((state) => state.user)
+  const { orderStatus, loading: orderLoading, error } = useSelector((state) => state.orderStatus);
+
+  useEffect(() => {
+    dispatch(getUsers())
+    dispatch(fetchOrderStatus());
+  }, [dispatch])
+
+  const filteredOrderStatus = orderStatus.map(({ isAction, isOrderStatus, ...rest }) => rest);
+
+
+  
+
+  // console.log(users)
+
   return (
     <div className="flex bg-gray-100 custom-container">
       {/* Main Content */}
@@ -12,11 +33,11 @@ const Home = () => {
         {/* Header */}
         <header className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-6 py-3 flex justify-between items-center shadow-md">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold">
               A
             </div>
-          </div>
+          </div> */}
         </header>
 
         {/* Dashboard Content */}
@@ -28,7 +49,7 @@ const Home = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold">Total Orders</h2>
-              <p className="text-gray-500 text-lg">{orders.length}</p>
+              <p className="text-gray-500 text-lg">{filteredOrderStatus.length}</p>
             </div>
           </div>
 
@@ -57,7 +78,7 @@ const Home = () => {
         {/* Recent Orders */}
         <div className="py-3 px-6">
           <h2 className="text-xl font-bold mb-2">Recent Orders</h2>
-          <Table data={orders} />
+          <Table data={filteredOrderStatus} />
         </div>
 
         {/* Recent Users */}

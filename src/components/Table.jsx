@@ -698,7 +698,7 @@ import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 
-const Table = ({ data, onEdit, onDelete, onStatus }) => {
+const Table = ({ data, onEdit, onDelete, onStatus, isOrderScroll }) => {
     // Ensure data is always an array
     const safeData = Array.isArray(data) ? data : [];
 
@@ -879,7 +879,7 @@ const Table = ({ data, onEdit, onDelete, onStatus }) => {
         'isInquiry', 'isCategory', 'isVariant', 'isOrderStatus',
         'isPayment', 'isShippingPartner', 'isSocial', 'isBrand', 'status',
         'sliderCategory', 'sliderSubcategory', 'bannerCategory',
-        'bannerSubcategory', 'brand'];
+        'bannerSubcategory', 'brand', 'title', 'subTitle', 'description'];
 
     const columns = safeData.length > 0
         ? Object.keys(safeData[0]).filter(column => !reservedFields.includes(column))
@@ -905,7 +905,7 @@ const Table = ({ data, onEdit, onDelete, onStatus }) => {
                 <img
                     src={value}
                     alt={column}
-                    className={`${row.isSlider ? 'w-80 h-50 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "desktopImage" ? 'w-80 h-30 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "mobileImage" ? 'w-40 h-45 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "icon" ? 'rounded-md' : 'w-15 h-15 rounded-full'} object-cover`}
+                    className={`${row.isSlider ? 'w-150 h-50 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "desktopImage" ? 'w-120 h-30 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "mobileImage" ? 'w-60 h-45 rounded-md' : 'w-15 h-15 rounded-full'} ${column === "icon" ? 'rounded-md' : 'w-15 h-15 rounded-full'} object-cover`}
                 />
             );
         } else if (typeof value === "string" && value.startsWith("http")) {
@@ -987,8 +987,8 @@ const Table = ({ data, onEdit, onDelete, onStatus }) => {
                     </div>
                 )}
 
-            <div className="overflow-x-auto shadow-lg">
-                <table className="min-w-full bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className={`overflow-x-auto rounded-xl w-full shadow-lg ${isOrderScroll ? 'max-w-[1280px] overflow-x-auto' : ''}`}>
+                <table className=" bg-white border border-gray-200 rounded-xl w-full ">
                     <thead className="bg-gray-900 text-white">
                         <tr>
                             <th className="py-3 px-6 text-left">Sr No.</th>
@@ -1014,7 +1014,7 @@ const Table = ({ data, onEdit, onDelete, onStatus }) => {
                                 <tr key={row?._id || `row-${index}`} className="border-b border-gray-200 hover:bg-gray-100">
                                     <td className="py-3 px-6">{index + 1}</td>
                                     {columns.map((column) => (
-                                        <td key={column} className="py-3 px-6">
+                                        <td key={column} className={`py-3 px-6 ${isOrderScroll ? 'whitespace-nowrap' : ''}`}>
                                             {renderCellContent(row, column)}
                                         </td>
                                     ))}

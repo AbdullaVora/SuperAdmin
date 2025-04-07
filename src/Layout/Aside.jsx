@@ -139,7 +139,7 @@ const SidebarItem = ({ icon, label, isExpanded, hasDropdown, isOpen, toggleDropd
         <div>
             <Link
                 to={hasDropdown ? "#" : fullLink} // Prevent navigation for dropdown parent
-                className={`flex items-center p-3 rounded-lg transition-all cursor-pointer  
+                className={`flex items-center p-3 my-1 rounded-lg transition-all cursor-pointer  
                     ${(isActive || isDropdownActive) ? "bg-blue-600 text-white" : "hover:bg-gray-700"} 
                     ${hasDropdown && isOpen ? "bg-gray-800" : ""}`}
                 onClick={(e) => {

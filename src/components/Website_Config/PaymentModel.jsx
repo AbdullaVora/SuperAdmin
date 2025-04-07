@@ -79,6 +79,7 @@ const PaymentModel = ({ onClose, isEdit, EditData }) => {
         >
           <option value="">Select a method</option>
           <option value="Cash On delivery">Cash On delivery</option>
+          <option value="Credit">Credit/Debit</option>
           <option value="payTM">PayTM</option>
           <option value="paypal">PayPal</option>
           <option value="stripe">Stripe</option>

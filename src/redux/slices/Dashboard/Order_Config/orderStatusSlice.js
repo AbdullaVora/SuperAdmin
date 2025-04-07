@@ -6,10 +6,21 @@ const API_URL = `${import.meta.env.VITE_API_URL}/api/dashboard`; // Replace with
 // ✅ Fetch All Order Statuses
 export const fetchOrderStatus = createAsyncThunk("orderStatus/fetchAll", async (_, { rejectWithValue }) => {
     try {
-        const response = await api.get(`${API_URL}/orderStatus`);
+        // const response = await api.get(`${API_URL}/orderStatus`);
+        const response = await api.get(`${API_URL}/getOrders`);
         return response.data; // Adjust based on API response
     } catch (error) {
         return rejectWithValue(error.response?.data || "Failed to fetch order statuses");
+    }
+});
+
+// ✅ Fetch All Orders
+export const fetchOrders = createAsyncThunk("orderStatus/fetchAllOrders", async (_, { rejectWithValue }) => {
+    try {
+        const response = await api.get(`${API_URL}/getOrders`);
+        return response.data; // Adjust based on API response
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to fetch orders");
     }
 });
 
@@ -49,6 +60,7 @@ const orderStatusSlice = createSlice({
     name: "orderStatus",
     initialState: {
         orderStatus: [],
+        allOrders: [],
         loading: false,
         error: null,
     },
@@ -62,7 +74,7 @@ const orderStatusSlice = createSlice({
             })
             .addCase(fetchOrderStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.orderStatus = action.payload
+                state.orderStatus = action.payload.orderStatus
             })
             .addCase(fetchOrderStatus.rejected, (state, action) => {
                 state.loading = false;
@@ -91,7 +103,19 @@ const orderStatusSlice = createSlice({
             // ✅ Handle Delete
             .addCase(deleteOrderStatus.fulfilled, (state, action) => {
                 state.orderStatus = state.orderStatus.filter(order => order._id !== action.payload);
-            });
+            })
+            .addCase(fetchOrders.pending, (state, action) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.allOrders = action.payload.orders;
+            })
+            .addCase(fetchOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     },
 });
 

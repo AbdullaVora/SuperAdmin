@@ -174,11 +174,18 @@ const BrandModel = ({ onClose, EditData, isEdit }) => {
     const [parentbrand, setParentbrand] = useState("N/A");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Fetch categories from Redux when component mounts
+    // // Fetch categories from Redux when component mounts
+    // useEffect(() => {
+    //     dispatch(fetchBrands());
+    //     dispatch(fetchCategories());
+    // }, [dispatch]);
+
     useEffect(() => {
-        dispatch(fetchBrands());
-        dispatch(fetchCategories());
-    }, [dispatch]);
+        if (!brands.length) {
+            dispatch(fetchBrands());
+            dispatch(fetchCategories());
+        }
+    }, [dispatch, brands]);
 
     // Set form values when EditData is available
     useEffect(() => {

@@ -33,6 +33,18 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+export const getUsers = createAsyncThunk(
+    "user/getUsers",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`${API_URL}/getUsers`); // ✅ Correct API URL
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Registration failed");
+        }
+    }
+);
+
 // Logout Action
 export const logoutUser = () => (dispatch) => {
     localStorage.removeItem("user");
@@ -46,10 +58,11 @@ const userSlice = createSlice({
         token: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : null,
         loading: false,
         error: null,
+        users: [],
     },
     reducers: {
         logout: (state) => {
-            state.user = null;
+            state.users = null;
             state.token = null;
             state.loading = false;
             state.error = null;
@@ -66,7 +79,7 @@ const userSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
+                // state.user = action.payload;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -81,6 +94,18 @@ const userSlice = createSlice({
                 state.loading = false;
             })
             .addCase(registerUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getUsers.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getUsers.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = action.payload;
+            })
+            .addCase(getUsers.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

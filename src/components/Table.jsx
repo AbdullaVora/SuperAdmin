@@ -879,7 +879,7 @@ const Table = ({ data, onEdit, onDelete, onStatus, isOrderScroll }) => {
         'isInquiry', 'isCategory', 'isVariant', 'isOrderStatus',
         'isPayment', 'isShippingPartner', 'isSocial', 'isBrand', 'status',
         'sliderCategory', 'sliderSubcategory', 'bannerCategory',
-        'bannerSubcategory', 'brand', 'title', 'subTitle', 'description', 'userId'];
+        'bannerSubcategory', 'brand', 'title', 'subTitle', 'description', 'userId', 'products'];
 
     const columns = safeData.length > 0
         ? Object.keys(safeData[0]).filter(column => !reservedFields.includes(column))

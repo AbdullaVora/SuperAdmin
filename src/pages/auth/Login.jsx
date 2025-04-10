@@ -76,9 +76,9 @@ export default function Login() {
                 {passwordVisible ? <IoEyeOutline /> : <IoEyeOffOutline />}
               </button>
             </div>
-            <div className="text-right mt-1">
+            {/* <div className="text-right mt-1">
               <a href="#" className="text-blue-500 text-sm">Lost Password?</a>
-            </div>
+            </div> */}
           </div>
 
           {/* Sign In Button */}

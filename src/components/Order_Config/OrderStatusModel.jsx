@@ -13,7 +13,7 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
     const [orderStatus, setorderStatus] = useState("");
     const [updateDate, setUpdateDate] = useState("");
 
-    const statusOptions = ["Pending", "In Progress", "Complete", "Cancelled"];
+    const statusOptions = ["Pending", "Process", "Complete", "Cancelled"];
 
     // // Fetch Order Statuses when component mounts
     // useEffect(() => {

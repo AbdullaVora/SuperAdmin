@@ -866,7 +866,7 @@ const Table = ({ data, onEdit, onDelete, onStatus, isOrderScroll }) => {
                 return "bg-red-500 text-white";
             case "complete":
                 return "bg-green-500 text-white";
-            case "in progress":
+            case "process":
                 return "bg-blue-500 text-white";
             default:
                 return "bg-gray-300 text-gray-700";

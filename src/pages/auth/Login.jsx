@@ -82,7 +82,7 @@ export default function Login() {
           </div>
 
           {/* Sign In Button */}
-          <button
+          <button 
             className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
             onClick={handleLogin}
             disabled={loading}

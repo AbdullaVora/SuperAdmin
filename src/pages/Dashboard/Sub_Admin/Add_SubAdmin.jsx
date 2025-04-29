@@ -8,7 +8,7 @@ import { TbCategoryFilled } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSubAdmin } from '../../../redux/slices/Dashboard/SubAdmin/subAdminSlice';
 
-const AddSubAdmin = () => {
+const Add_SubAdmin = () => {
 
     const dispatch = useDispatch()
 
@@ -609,4 +609,4 @@ const AddSubAdmin = () => {
     );
 };
 
-export default AddSubAdmin;
+export default Add_SubAdmin;

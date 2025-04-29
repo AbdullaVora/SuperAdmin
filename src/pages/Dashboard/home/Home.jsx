@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import CryptoJS from 'crypto-js';
 import { FaHome, FaBox, FaUsers, FaCog, FaChartPie, FaCartArrowDown } from "react-icons/fa";
 import Table from "../../../components/Table";
 import orders from "../../../../data/order.json"
@@ -21,8 +22,26 @@ const Home = () => {
 
   const filteredOrderStatus = orderStatus.map(({ isAction, isOrderStatus, ...rest }) => rest);
 
+  const sanitizedUsers = users.map(user => {
+    try {
+      // Only attempt decryption if password is encrypted
+      const decryptedPassword = user.password.startsWith('U2FsdGVkX1')
+        ? CryptoJS.AES.decrypt(user.password, 'your_secret_key').toString(CryptoJS.enc.Utf8)
+        : 'ENCRYPTION_NOT_DETECTED';
 
-  
+      return {
+        ...user,
+        password: decryptedPassword || 'DECRYPTION_FAILED', // Show decrypted password (DANGEROUS)
+      };
+    } catch (error) {
+      return {
+        ...user,
+        password: 'DECRYPTION_ERROR'
+      };
+    }
+  });
+
+
 
   // console.log(users)
 
@@ -84,7 +103,7 @@ const Home = () => {
         {/* Recent Users */}
         <div className="py-3 px-6">
           <h2 className="text-xl font-bold mb-2">Recent Users</h2>
-          <Table data={users} />
+          <Table data={sanitizedUsers} />
         </div>
       </div>
     </div>

@@ -5,20 +5,43 @@ import api from "../../../api/instance";
 const API_URL = `${import.meta.env.VITE_API_URL}/api/auth`; // ✅ Corrected
 
 // Async Thunks for Login and Register
+// export const loginUser = createAsyncThunk(
+//     "user/login",
+//     async (userData, { rejectWithValue }) => {
+//         try {
+//             console.log("Sending Login Request:", userData);
+//             const response = await api.post(`${API_URL}/login`, userData); // ✅ Correct API URL
+//             console.log(response.data)
+//             localStorage.setItem("token", JSON.stringify(response.data.token)); // Save user data
+//             return response.data;
+//         } catch (error) {
+//             return rejectWithValue(error.response?.data?.message || "Login failed");
+//         }
+//     }
+// );
+
+
 export const loginUser = createAsyncThunk(
     "user/login",
     async (userData, { rejectWithValue }) => {
         try {
             console.log("Sending Login Request:", userData);
-            const response = await api.post(`${API_URL}/login`, userData); // ✅ Correct API URL
-            console.log(response.data)
-            localStorage.setItem("token", JSON.stringify(response.data.token)); // Save user data
+            console.log("API_URL is:", API_URL); // 🛠 Check API_URL
+            const response = await api.post(`${API_URL}/login`, userData);
+            console.log("Response received:", response.data);
+
+            localStorage.setItem("token", JSON.stringify(response.data.token));
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            localStorage.setItem("userId", JSON.stringify(response.data.id));
+
             return response.data;
         } catch (error) {
+            console.error("Login error full details:", error); // 🛠 Log full error
             return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     }
 );
+
 
 export const registerUser = createAsyncThunk(
     "user/register",

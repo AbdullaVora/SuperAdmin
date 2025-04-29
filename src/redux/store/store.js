@@ -11,6 +11,7 @@ import paymentMethods from "../slices/Dashboard/Website_Config/paymentMethodSlic
 import shippingPartners from "../slices/Dashboard/Website_Config/shippingPartnerSlice";
 import socialLinks from "../slices/Dashboard/Website_Config/socialLinksSlice";
 import productSlice from "../slices/Dashboard/product/productSlice";
+import subAdminSlice from "../slices/Dashboard/SubAdmin/subAdminSlice"
 
 export const store = configureStore({
   reducer: {
@@ -25,7 +26,8 @@ export const store = configureStore({
     shippingPartners: shippingPartners,
     socialLinks: socialLinks,
     products: productSlice,
-    brand: brandSlice
+    brand: brandSlice,
+    subAdmins: subAdminSlice,
   },
 
 });

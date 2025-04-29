@@ -21,6 +21,8 @@ export default function Login() {
   const handleLogin = async () => {
     const result = await dispatch(loginUser({ email, password }));
 
+    console.log("Login Result:", result);
+
     if (result.meta.requestStatus === "fulfilled") {
       toast.success("Login Successful!", { autoClose: 1000 });
       setTimeout(() => navigate("/dashboard"), 1000);

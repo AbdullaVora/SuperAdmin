@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+
 .custom-container {
   margin-left: 220px;
   margin-top: 70px;

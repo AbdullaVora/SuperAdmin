@@ -34,7 +34,12 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
 
             setorderStatusCode(EditData.orderCode || "");
             setorderStatusName(EditData.orderName || "");
-            setorderStatus(EditData.orderStatus || "");
+
+            // Convert to title case to match dropdown options
+            const status = EditData.orderStatus
+                ? EditData.orderStatus.charAt(0).toUpperCase() + EditData.orderStatus.slice(1).toLowerCase()
+                : "";
+            setorderStatus(status);
 
             // Format the date to YYYY-MM-DD
             if (EditData.updatedAt) {
@@ -46,14 +51,14 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
 
 
     const handleSubmit = () => {
-        if (!orderStatusCode?.trim() || !orderStatusName?.trim() || !orderStatus) {
+        if (!orderStatusCode?.trim() || !orderStatus) {
             toast.error("All fields are required!");
             return;
         }
 
         const orderData = {
             orderCode: orderStatusCode.trim(),
-            orderName: orderStatusName.trim(),
+            // orderName: orderStatusName.trim(),
             orderStatus,
             updateDate,
         };
@@ -115,7 +120,7 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
                 />
 
                 {/* orderStatus Name */}
-                <label className="block mb-2 font-medium text-[#0B0F19] mt-3">
+                {/* <label className="block mb-2 font-medium text-[#0B0F19] mt-3">
                     Order Status Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -124,15 +129,15 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
                     placeholder="Enter Order Status Name"
                     value={orderStatusName}
                     onChange={(e) => setorderStatusName(e.target.value)}
-                />
+                /> */}
 
                 {/* orderStatus Status (Dropdown) */}
                 <label className="block mb-2 font-medium text-[#0B0F19] mt-3">
                     Order Status <span className="text-red-500">*</span>
                 </label>
-                <select
+                <select 
                     className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#F77F00]"
-                    value={orderStatus}
+                    value={orderStatus || ""} // Make sure it's not undefined or null
                     onChange={(e) => setorderStatus(e.target.value)}
                 >
                     <option value="">Select Status</option>
@@ -140,7 +145,6 @@ const OrderStatusModel = ({ onClose, isEdit, EditData }) => {
                         <option key={index} value={status}>{status}</option>
                     ))}
                 </select>
-
                 {/* Update Date */}
                 <label className="block mb-2 font-medium text-[#0B0F19] mt-3">
                     Update Date <span className="text-red-500">*</span>

@@ -76,7 +76,7 @@ const ShippingpartnersModel = ({ onClose, isEdit, EditData }) => {
         />
 
         {/* Shipping Method Login ID */}
-        <label className="block mb-2 font-medium text-[#0B0F19] mt-3">Shipping Method Login Id<span className="text-red-500">*</span></label>
+        <label className="block mb-2 font-medium text-[#0B0F19] mt-3">Shipping Partner Login Id<span className="text-red-500">*</span></label>
         <div className="relative">
           <input
             type="text"
@@ -89,7 +89,7 @@ const ShippingpartnersModel = ({ onClose, isEdit, EditData }) => {
         </div>
 
         {/* Shipping Method Login Password */}
-        <label className="block mb-2 font-medium text-[#0B0F19] mt-3">Shipping Method Login Password<span className="text-red-500">*</span></label>
+        <label className="block mb-2 font-medium text-[#0B0F19] mt-3">Shipping Partner Login Password<span className="text-red-500">*</span></label>
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}

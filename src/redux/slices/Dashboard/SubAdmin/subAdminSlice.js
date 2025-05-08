@@ -9,7 +9,7 @@ export const fetchSubAdmins = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get(`${API_URL}/getSubAdmins`);
-            return response.data;
+            return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch sub-admins");
         }
@@ -99,7 +99,7 @@ const subAdminSlice = createSlice({
             })
             .addCase(fetchSubAdmins.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload.data || action.payload;
+                state.list = action.payload;
             })
             .addCase(fetchSubAdmins.rejected, (state, action) => {
                 state.loading = false;

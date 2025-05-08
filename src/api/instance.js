@@ -8,9 +8,9 @@ const api = axios.create({
 // Add token to headers for all requests
 api.interceptors.request.use(
     (config) => {
-        const user = localStorage.getItem("user"); // Get user from storage
-        if (user?.token) {
-            config.headers.Authorization = `Bearer ${user.token}`; // Attach token
+        const token = JSON.parse(localStorage.getItem("Admintoken")); // Get user from storage
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`; // Attach token
         }
         return config;
     },

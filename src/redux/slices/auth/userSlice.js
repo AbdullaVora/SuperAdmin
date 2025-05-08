@@ -30,9 +30,9 @@ export const loginUser = createAsyncThunk(
             const response = await api.post(`${API_URL}/login`, userData);
             console.log("Response received:", response.data);
 
-            localStorage.setItem("token", JSON.stringify(response.data.token));
-            localStorage.setItem("user", JSON.stringify(response.data.user));
-            localStorage.setItem("userId", JSON.stringify(response.data.id));
+            localStorage.setItem("Admintoken", JSON.stringify(response.data.token));
+            localStorage.setItem("AdminName", JSON.stringify(response.data.name));
+            localStorage.setItem("AdminId", JSON.stringify(response.data.id));
 
             return response.data;
         } catch (error) {
@@ -48,7 +48,7 @@ export const registerUser = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await api.post(`${API_URL}/register`, userData); // ✅ Correct API URL
-            localStorage.setItem("token", JSON.stringify(response.data.token)); // Save user data
+            localStorage.setItem("Admintoken", JSON.stringify(response.data.token)); // Save user data
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Registration failed");
@@ -61,6 +61,7 @@ export const getUsers = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get(`${API_URL}/getUsers`); // ✅ Correct API URL
+            console.log(response.data)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Registration failed");
@@ -70,7 +71,9 @@ export const getUsers = createAsyncThunk(
 
 // Logout Action
 export const logoutUser = () => (dispatch) => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("AdminName");
+    localStorage.removeItem("AdminId");
+    localStorage.removeItem("Admintoken");
     dispatch(logout());
 };
 
@@ -78,7 +81,7 @@ export const logoutUser = () => (dispatch) => {
 const userSlice = createSlice({
     name: "user",
     initialState: {
-        token: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : null,
+        token: localStorage.getItem("Admintoken") ? JSON.parse(localStorage.getItem("Admintoken")) : null,
         loading: false,
         error: null,
         users: [],
@@ -89,7 +92,9 @@ const userSlice = createSlice({
             state.token = null;
             state.loading = false;
             state.error = null;
-            localStorage.removeItem("token");
+            localStorage.removeItem("Admintoken");
+            localStorage.removeItem("AdminId");
+            localStorage.removeItem("AdminName")
             window.location.reload();
         },
     },

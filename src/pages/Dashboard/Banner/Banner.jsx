@@ -21,6 +21,7 @@ const Banner = () => {
   const [canEdit, setCanEdit] = useState(true);
   const [canDelete, setCanDelete] = useState(true);
   const [canCreate, setCanCreate] = useState(true);
+  const [canActive, setCanActive] = useState(true);
   const [userId, setUserId] = useState();
   const dispatch = useDispatch();
 
@@ -69,12 +70,14 @@ const Banner = () => {
         setCanCreate(permissions?.create ?? false);
         setCanEdit(permissions?.edit ?? false);
         setCanDelete(permissions?.delete ?? false);
+        setCanActive(permissions?.active ?? false);
       }
     } else if (findUser) {
       // fallback for super-admin or if currentSubAdmin not found
       setCanCreate(true);
       setCanEdit(true);
       setCanDelete(true);
+      setCanActive(true)
     }
   }, [list, findUser]);
 
@@ -179,6 +182,7 @@ const Banner = () => {
                 data={banners}
                 canEdit={canEdit}
                 canDelete={canDelete}
+                canActive={canActive}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onStatus={onStatus}

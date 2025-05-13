@@ -21,6 +21,7 @@ const Slider = () => {
   const [canEdit, setCanEdit] = useState(true);
   const [canDelete, setCanDelete] = useState(true);
   const [canCreate, setCanCreate] = useState(true);
+  const [canActive, setCanActive] = useState(true);
   const [userId, setUserId] = useState();
   const dispatch = useDispatch();
 
@@ -66,15 +67,17 @@ const Slider = () => {
       const currentSubAdmin = list.find((sub) => sub.email === findUser.email);
       console.log(currentSubAdmin);
       if (currentSubAdmin) {
-        const permissions = currentSubAdmin.permissions?.banner_config;
+        const permissions = currentSubAdmin.permissions?.slider_config;
         setCanCreate(permissions?.create ?? false);
         setCanEdit(permissions?.edit ?? false);
         setCanDelete(permissions?.delete ?? false);
+        setCanActive(permissions?.active ?? false);
       }
     } else if (findUser) {
       // fallback for super-admin or if currentSubAdmin not found
       setCanEdit(true);
       setCanDelete(true);
+      setCanActive(true)
     }
   }, [list, findUser]);
 
@@ -173,6 +176,7 @@ const Slider = () => {
               <Table
                 canEdit={canEdit}
                 canDelete={canDelete}
+                canActive={canActive}
                 data={sliders}
                 onEdit={onEdit}
                 onDelete={onDelete}

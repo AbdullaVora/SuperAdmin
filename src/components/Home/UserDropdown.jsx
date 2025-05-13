@@ -93,7 +93,7 @@ const UserDropdown = () => {
             </li> */}
             {accesSubAdmin && (
               <Link to="/addSubadmin">
-                <li className="px-4 py-2 hover:bg-blue-100 flex items-center space-x-2 cursor-pointer text-blue-500">
+                <li onClick={() => setIsOpen(!isOpen)} className="px-4 py-2 hover:bg-blue-100 flex items-center space-x-2 cursor-pointer text-blue-500">
                   <FaPlusSquare className="text-blue-500" />{" "}
                   <span className="text-gray-600">Add Sub Admin</span>
                 </li>
@@ -101,7 +101,7 @@ const UserDropdown = () => {
             )}
             {accesSubAdmin && (
               <Link to="/AllSubAdmins">
-                <li className="px-4 py-2 hover:bg-green-100 flex items-center space-x-2 cursor-pointer text-green-500">
+                <li onClick={() => setIsOpen(!isOpen)} className="px-4 py-2 hover:bg-green-100 flex items-center space-x-2 cursor-pointer text-green-500">
                   <FaUsers className="text-green-500" />{" "}
                   <span className="text-gray-600">Sub Admins</span>
                 </li>

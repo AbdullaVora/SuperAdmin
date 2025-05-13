@@ -20,7 +20,9 @@ const OrderStatus = () => {
   const [canEdit, setCanEdit] = useState(true);
   const [canDelete, setCanDelete] = useState(true);
   const [canCreate, setCanCreate] = useState(true);
+  const [canActive, setCanActive] = useState(true);
   const [userId, setUserId] = useState();
+  
 
   const dispatch = useDispatch();
 
@@ -30,7 +32,32 @@ const OrderStatus = () => {
     loading: orderLoading,
     error,
   } = useSelector((state) => state.orderStatus);
-  console.log(orderStatus);
+  // console.log(orderStatus);
+
+  // Transform orders data to include product names at the top level
+  const transformOrdersData = (orders) => {
+    return orders.map((order) => {
+      const productNames = order.products
+        .map((product) => product.product?.name)
+        .filter((name) => name)
+        .join(", ");
+
+      // const quantity = order.products
+      //   .map((product) => product?.quantity)
+      //   .filter((quantity) => quantity)
+      //   .join(", ");
+
+      return {
+        ...order,
+        productNames, // Add product names at the top level
+        // quantity, // Add quantity at the top level
+        // amount: parseFloat(order.amount).toFixed(2),
+      };
+    });
+  };
+
+  const filteredData = transformOrdersData(orderStatus)
+
 
   // Fetch categories when component mounts
   useEffect(() => {
@@ -60,17 +87,19 @@ const OrderStatus = () => {
       findUser.role !== "super-admin"
     ) {
       const currentSubAdmin = list.find((sub) => sub.email === findUser.email);
-      console.log(currentSubAdmin);
+      // console.log(currentSubAdmin);
       if (currentSubAdmin) {
-        const permissions = currentSubAdmin.permissions?.banner_config;
+        const permissions = currentSubAdmin.permissions?.orders_config;
         setCanCreate(permissions?.create ?? false);
         setCanEdit(permissions?.edit ?? false);
         setCanDelete(permissions?.delete ?? false);
+        setCanActive(permissions?.active ?? false);
       }
     } else if (findUser) {
       // fallback for super-admin or if currentSubAdmin not found
       setCanEdit(true);
       setCanDelete(true);
+      setCanActive(true);
     }
   }, [list, findUser]);
 
@@ -167,12 +196,14 @@ const OrderStatus = () => {
               <p className="text-red-500">Error: {error}</p>
             ) : (
               <Table
-                data={orderStatus}
+                data={filteredData}
                 canEdit={canEdit}
+                canActive={canActive}
                 canDelete={canDelete}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onStatus={onStatus}
+                onEye={true}
               />
             )}
           </div>

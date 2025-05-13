@@ -614,6 +614,8 @@ import {
   FaLayerGroup,
   FaShippingFast,
   FaShoppingCart,
+  FaUser,
+  FaUsers,
 } from "react-icons/fa";
 import {
   FiHome,
@@ -670,6 +672,10 @@ const Add_SubAdmin = () => {
           label: "Delete Banners",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Banners",
+          default: true,
+        },
       },
     },
     {
@@ -688,6 +694,10 @@ const Add_SubAdmin = () => {
         },
         delete: {
           label: "Delete Sliders",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Sliders",
           default: true,
         },
       },
@@ -710,6 +720,34 @@ const Add_SubAdmin = () => {
           label: "Delete Product",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Product",
+          default: true,
+        },
+      },
+    },
+    {
+      id: "productInquiry",
+      title: "Product Inquiry",
+      icon: FaShoppingCart,
+      description: "Manage Product Inquiries",
+      permissions: {
+        // create: {
+        //   label: "Create Product",
+        //   default: true,
+        // },
+        edit: {
+          label: "Edit Inquiry",
+          default: true,
+        },
+        delete: {
+          label: "Delete Inquiry",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Inquiry",
+          default: true,
+        },
       },
     },
     {
@@ -728,6 +766,10 @@ const Add_SubAdmin = () => {
         },
         delete: {
           label: "Delete Coupon",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Coupon",
           default: true,
         },
       },
@@ -750,6 +792,10 @@ const Add_SubAdmin = () => {
           label: "Delete Category",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Category",
+          default: true,
+        },
       },
     },
     {
@@ -768,6 +814,10 @@ const Add_SubAdmin = () => {
         },
         delete: {
           label: "Delete Variant",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Variant",
           default: true,
         },
       },
@@ -790,6 +840,10 @@ const Add_SubAdmin = () => {
           label: "Delete Brand",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Brand",
+          default: true,
+        },
       },
     },
     {
@@ -808,6 +862,10 @@ const Add_SubAdmin = () => {
         },
         delete: {
           label: "Delete Orders Status",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Status",
           default: true,
         },
       },
@@ -830,6 +888,10 @@ const Add_SubAdmin = () => {
           label: "Delete Payments Method",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Payments",
+          default: true,
+        },
       },
     },
     {
@@ -850,6 +912,10 @@ const Add_SubAdmin = () => {
           label: "Delete Shipping Partner",
           default: true,
         },
+        active: {
+          label: "Active/Inactive Shipping Partner",
+          default: true,
+        },
       },
     },
     {
@@ -868,6 +934,30 @@ const Add_SubAdmin = () => {
         },
         delete: {
           label: "Delete Social Link",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Social Link",
+          default: true,
+        },
+      },
+    },
+    {
+      id: "users_config",
+      title: "Users Config",
+      icon: FaUsers,
+      description: "Manage Users Operations",
+      permissions: {
+        edit: {
+          label: "Edit Users",
+          default: true,
+        },
+        delete: {
+          label: "Delete Users",
+          default: true,
+        },
+        active: {
+          label: "Active/Inactive Users",
           default: true,
         },
       },
@@ -1001,14 +1091,14 @@ const Add_SubAdmin = () => {
 
     if (isEditMode) {
       // For edit mode, include the _id and exclude password if not changed
-    //   const submitData = {
-    //     ...formData,
-    //     _id: EditData._id,
-    //   };
+      //   const submitData = {
+      //     ...formData,
+      //     _id: EditData._id,
+      //   };
 
-    //   if (!submitData.password) {
-    //     delete submitData.password;
-    //   }
+      //   if (!submitData.password) {
+      //     delete submitData.password;
+      //   }
 
       console.log("Updating:", formData);
       dispatch(updateSubAdmin({ id: EditData._id, updatedData: formData }));

@@ -1,13 +1,54 @@
 @import "tailwindcss";
 
 
-::-webkit-scrollbar {
-  display: none;
+@media (min-width: 200px) and (max-width: 1360px) {
+  .table-responsive{
+    max-width: 1078px;
+  }
 }
 
+@media (min-width: 1360px) and (max-width: 1400px) {
+
+  .aside {
+    top: 8.5%;
+  }
+ 
+}
+
+@media (min-width: 1400px) {
+
+  .aside {
+    top: 7.3%;
+  }
+ 
+}
+
+.no-oklch * {
+  background-color: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+}
+
+/* Ensure images are PDF-ready by default */
+.invoice-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* Container for centered images */
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 10px 0;
+  page-break-inside: avoid;
+}
 
 .custom-container {
-  margin-left: 220px;
+  /* margin-left: 220px; */
   margin-top: 70px;
 }
 .custom-toast {

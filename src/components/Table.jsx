@@ -688,6 +688,8 @@
 import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
+import InvoiceComponent from "./Invoince/Invoince";
+import ErrorBoundary from "../helper/ErrorBoundary";
 
 const Table = ({
   data,
@@ -697,7 +699,10 @@ const Table = ({
   isOrderScroll,
   canEdit,
   canDelete,
+  canActive,
+  onEye,
 }) => {
+  // console.log(data);
   // Ensure data is always an array
   const safeData = Array.isArray(data) ? data : [];
 
@@ -706,6 +711,9 @@ const Table = ({
   const [status, setStatus] = useState({});
   const [limit, setLimit] = useState(10); // Default limit
   const [sortCriteria, setSortCriteria] = useState("latest"); // Default sorting criteria
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   // Initialize status values from data when component mounts
   useEffect(() => {
@@ -792,6 +800,26 @@ const Table = ({
     console.log("Filtered data:", limitedData.length, "items");
     setFilteredData(limitedData);
   }, [data, searchTerm, limit, sortCriteria]);
+
+  const handleView = (id) => {
+    console.log("View clicked with ID:", id);
+    if (!id) {
+      console.error("No ID provided for invoice");
+      return;
+    }
+    console.log("Before setting state - isInvoiceOpen:", isInvoiceOpen);
+    setSelectedInvoice(id);
+    setIsInvoiceOpen(true);
+    console.log(
+      "After setting state - immediate isInvoiceOpen:",
+      isInvoiceOpen
+    ); // This will still show old value
+  };
+
+  // Add this effect to log actual state changes
+  useEffect(() => {
+    console.log("Actual isInvoiceOpen state changed to:", isInvoiceOpen);
+  }, [isInvoiceOpen]);
 
   const handleEdit = (id) => {
     if (onEdit) onEdit(id);
@@ -907,18 +935,61 @@ const Table = ({
     "isSubAdmin",
     "role",
     "isInquiry",
+    "isUser",
+    "isOrders",
     "__v",
   ];
 
-  const columns =
+  // const columns =
+  //   safeData.length > 0
+  //     ? Object.keys(safeData[0]).filter(
+  //         (column) => !reservedFields.includes(column)
+  //       )
+  //     : [];
+
+  // Get all columns first
+  const allColumns =
     safeData.length > 0
       ? Object.keys(safeData[0]).filter(
           (column) => !reservedFields.includes(column)
         )
       : [];
 
-  console.log("Columns to display:", columns);
-  console.log("Filtered data count:", filteredData.length);
+  // Reorder columns to put productNames in position 3
+  // Reorder columns to put productNames in position 3 and quantity right after
+  const reorderedColumns = [...allColumns];
+  const productNamesIndex = reorderedColumns.indexOf("productNames");
+  const quantityIndex = reorderedColumns.indexOf("quantity");
+
+  // First move productNames to position 2 (will be 3rd column after Sr No.)
+  if (productNamesIndex > -1 && reorderedColumns.length > 2) {
+    reorderedColumns.splice(productNamesIndex, 1);
+    reorderedColumns.splice(2, 0, "productNames");
+  }
+
+  // Then move quantity right after productNames if it exists
+  if (quantityIndex > -1 && reorderedColumns.includes("productNames")) {
+    // Remove quantity from its current position
+    const newQuantityIndex = reorderedColumns.indexOf("quantity");
+    if (newQuantityIndex > -1) {
+      reorderedColumns.splice(newQuantityIndex, 1);
+    }
+
+    // Find productNames position and insert quantity after it
+    const afterProductNamesPos = reorderedColumns.indexOf("productNames") + 1;
+    reorderedColumns.splice(afterProductNamesPos, 0, "quantity");
+  }
+  // console.log("Columns to display:", columns);
+  // console.log("Filtered data count:", filteredData.length);
+
+  // Toggle expanded row
+  const toggleExpandRow = (id) => {
+    if (expandedRow === id) {
+      setExpandedRow(null); // Collapse if already expanded
+    } else {
+      setExpandedRow(id); // Expand this row
+    }
+  };
 
   // Helper function to safely render cell content
   const renderCellContent = (row, column) => {
@@ -987,6 +1058,57 @@ const Table = ({
           {value || "N/A"}
         </span>
       );
+    } else if (column === "productNames") {
+      // Special handling for productNames
+      if (!value) return "N/A";
+
+      const isExpanded = expandedRow === row._id;
+      let displayValue = String(value);
+
+      // For array values, handle specially
+      if (Array.isArray(value)) {
+        displayValue = value.join(", ");
+      }
+
+      // If the row is expanded, show full content
+      if (isExpanded) {
+        return (
+          <div className="relative">
+            <div className="text-sm pb-6">{displayValue}</div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpandRow(row._id);
+              }}
+              className="absolute bottom-0 right-0 text-blue-500 hover:text-blue-700 text-xs"
+            >
+              Show less
+            </button>
+          </div>
+        );
+      }
+
+      // If not expanded, truncate and show expand button
+      return (
+        <div className="relative">
+          <div className="text-sm truncate max-w-xs">
+            {displayValue.length > 20
+              ? displayValue.substring(0, 20) + "..."
+              : displayValue}
+          </div>
+          {displayValue.length > 20 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpandRow(row._id);
+              }}
+              className="text-blue-500 hover:text-blue-700 text-xs"
+            >
+              Show more
+            </button>
+          )}
+        </div>
+      );
     }
 
     // For other types, simply convert to string
@@ -1016,7 +1138,8 @@ const Table = ({
           safeData[0].isSocial ||
           safeData[0].isBrand ||
           safeData[0].isSubAdmin ||
-          safeData[0].isInquiry) && (
+          safeData[0].isInquiry ||
+          safeData[0].isUser) && (
           <div className="px-4 py-3 bg-gray-50 rounded-2xl border-gray-200 flex justify-between items-center">
             <div className="relative w-64 mx-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -1057,28 +1180,75 @@ const Table = ({
 
       <div
         className={`overflow-x-auto rounded-xl w-full shadow-lg ${
-          isOrderScroll ? "max-w-[1280px] overflow-x-auto" : ""
+          isOrderScroll ? "max-w-[1668px] table-responsive overflow-x-auto" : ""
         }`}
       >
+        {/* Invoice Modal */}
+        {isInvoiceOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 mt-15 z-[9999]">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-auto">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-xl font-bold">ORDER INVOINCE</h2>
+                <button
+                  onClick={() => setIsInvoiceOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-6">
+                {selectedInvoice && (
+                  <ErrorBoundary>
+                    <InvoiceComponent id={selectedInvoice} />
+                  </ErrorBoundary>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <table className=" bg-white border border-gray-200 rounded-xl w-full ">
           <thead className="bg-gray-900 text-white">
             <tr>
               <th className="py-3 px-6 text-left">Sr No.</th>
-              {columns.map((column) => (
+              {/* {columns.map((column) => (
+                <th key={column} className="py-3 px-6 text-left capitalize">
+                  {column.replace(/([A-Z])/g, " $1").trim()}
+                </th>
+              ))} */}
+              {reorderedColumns.map((column) => (
                 <th key={column} className="py-3 px-6 text-left capitalize">
                   {column.replace(/([A-Z])/g, " $1").trim()}
                 </th>
               ))}
-              {hasActionColumn && (
-                <th className="py-3 px-6 text-left">Action</th>
-              )}
+              {hasActionColumn &&
+                (canActive || canDelete || canEdit || onEye) && (
+                  <th className="py-3 px-6 text-left">Action</th>
+                )}
             </tr>
           </thead>
           <tbody>
             {safeFilteredData.length === 0 ? (
               <tr>
-                <td
+                {/* <td
                   colSpan={columns.length + (hasActionColumn ? 2 : 1)}
+                  className="py-4 px-6 text-center text-gray-500"
+                > */}
+                <td
+                  colSpan={reorderedColumns.length + (hasActionColumn ? 2 : 1)}
                   className="py-4 px-6 text-center text-gray-500"
                 >
                   No matching results found
@@ -1091,7 +1261,17 @@ const Table = ({
                   className="border-b border-gray-200 hover:bg-gray-100"
                 >
                   <td className="py-3 px-6">{index + 1}</td>
-                  {columns.map((column) => (
+                  {/* {columns.map((column) => (
+                    <td
+                      key={column}
+                      className={`py-3 px-6 ${
+                        isOrderScroll ? "whitespace-nowrap" : ""
+                      }`}
+                    >
+                      {renderCellContent(row, column)}
+                    </td>
+                  ))} */}
+                  {reorderedColumns.map((column) => (
                     <td
                       key={column}
                       className={`py-3 px-6 ${
@@ -1101,95 +1281,118 @@ const Table = ({
                       {renderCellContent(row, column)}
                     </td>
                   ))}
-                  {row?.isAction && (
-                    <td
-                      className={`py-3 px-6 flex items-center space-x-3 ${
-                        row.isCoupon ||
-                        row.isCategory ||
-                        row.isOrderStatus ||
-                        row.isPayment ||
-                        row.isShippingPartner ||
-                        row.isSocial ||
-                        row.isBrand ||
-                        row.isVariant ||
-                        row.isSubAdmin
-                          ? "my-2"
-                          : row.isBanner
-                          ? "my-[48%]"
-                          : "my-[52%]"
-                      }`}
-                    >
-                      {canEdit && (
-                        <button
-                          className="text-gray-600 hover:text-blue-600 transition-colors duration-200 p-2 rounded-full hover:bg-blue-100"
-                          onClick={() => handleEdit(row._id || `row-${index}`)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                  {row?.isAction &&
+                    hasActionColumn &&
+                    (canActive || canDelete || canEdit || onEye) && (
+                      <td
+                        className={`py-3 px-6 flex items-center space-x-3 ${
+                          row.isCoupon ||
+                          row.isCategory ||
+                          row.isOrderStatus ||
+                          row.isPayment ||
+                          row.isShippingPartner ||
+                          row.isSocial ||
+                          row.isBrand ||
+                          row.isVariant ||
+                          row.isSubAdmin ||
+                          row.isInquiry ||
+                          row.isOrders ||
+                          row.isUser
+                            ? "my-2"
+                            : row.isBanner
+                            ? "my-[48%]"
+                            : "my-[52%]"
+                        }`}
+                      >
+                        {canEdit && (
+                          <button
+                            className="text-gray-600 hover:text-blue-600 transition-colors duration-200 p-2 rounded-full hover:bg-blue-100"
+                            onClick={() =>
+                              handleEdit(row._id || `row-${index}`)
+                            }
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          className="text-gray-600 hover:text-red-600 transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
-                          onClick={() =>
-                            handleDelete(row._id || `row-${index}`)
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            className="text-gray-600 hover:text-red-600 transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
+                            onClick={() =>
+                              handleDelete(row._id || `row-${index}`)
+                            }
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {onEye && (
+                          <td>
+                            <button
+                              className="text-gray-600 hover:text-indigo-600 transition-colors duration-200 p-2 rounded-full hover:bg-indigo-100"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleView(row._id);
+                              }} // Pass the current row data
+                            >
+                              <FaEye className="h-5 w-5" />
+                            </button>
+                          </td>
+                        )}
+                        {canActive && (
+                          <label className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="sr-only peer"
+                              checked={!!status[row._id || `row-${index}`]}
+                              onChange={() =>
+                                handleToggleStatus(row._id || `row-${index}`)
+                              }
                             />
-                          </svg>
-                        </button>
-                      )}
-                      <label className="flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={!!status[row._id || `row-${index}`]}
-                          onChange={() =>
-                            handleToggleStatus(row._id || `row-${index}`)
-                          }
-                        />
-                        <div
-                          className={`w-10 h-5 rounded-full relative transition-all ${
-                            status[row._id || `row-${index}`]
-                              ? "bg-green-500"
-                              : "bg-gray-300"
-                          }`}
-                        >
-                          <div
-                            className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${
-                              status[row._id || `row-${index}`]
-                                ? "left-6"
-                                : "left-1"
-                            }`}
-                          ></div>
-                        </div>
-                      </label>
-                    </td>
-                  )}
+                            <div
+                              className={`w-10 h-5 rounded-full relative transition-all ${
+                                status[row._id || `row-${index}`]
+                                  ? "bg-green-500"
+                                  : "bg-gray-300"
+                              }`}
+                            >
+                              <div
+                                className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${
+                                  status[row._id || `row-${index}`]
+                                    ? "left-6"
+                                    : "left-1"
+                                }`}
+                              ></div>
+                            </div>
+                          </label>
+                        )}
+                      </td>
+                    )}
                 </tr>
               ))
             )}

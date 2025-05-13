@@ -69,6 +69,32 @@ export const getUsers = createAsyncThunk(
     }
 );
 
+export const deleteUser = createAsyncThunk(
+    "user/deleteUser",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await api.delete(`${API_URL}/deleteUser/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Registration failed");
+
+        }
+    }
+);
+
+export const updateUser = createAsyncThunk(
+    "user/updateUser",
+    async ({ id, updatedData }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`${API_URL}/editUser/${id}`, updatedData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Registration failed");
+        }
+    }
+)
+
+
 // Logout Action
 export const logoutUser = () => (dispatch) => {
     localStorage.removeItem("AdminName");
@@ -134,6 +160,34 @@ const userSlice = createSlice({
                 state.users = action.payload;
             })
             .addCase(getUsers.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(deleteUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = state.users.filter((user) => user.id !== action.payload);
+            })
+            .addCase(deleteUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = state.users.map((user) => {
+                    if (user.id === action.payload.id) {
+                        return action.payload;
+                    }
+                })
+            })
+            .addCase(updateUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

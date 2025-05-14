@@ -104,10 +104,27 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { privateRoutes, publicRoutes } from "./routes/Routes";
 import ProtectedRoute from "./helper/ProtectedRoute";
 import Layout from "./Layout/Layout";
+import { useEffect } from "react";
 
 function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/";
+
+  useEffect(() => {
+    const token = localStorage.getItem("Admintoken");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log(payload)
+        if (payload.exp && Date.now() >= payload.exp * 1000) {
+          localStorage.removeItem("Admintoken");
+        }
+      } catch (e) {
+        // Invalid token, remove it
+        localStorage.removeItem("Admintoken");
+      }
+    }
+  }, []);
 
   return (
     <>

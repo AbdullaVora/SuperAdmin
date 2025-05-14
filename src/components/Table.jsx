@@ -937,6 +937,7 @@ const Table = ({
     "isInquiry",
     "isUser",
     "isOrders",
+    "daysActive",
     "__v",
   ];
 

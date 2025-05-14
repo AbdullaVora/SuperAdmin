@@ -13,6 +13,7 @@
 //   FaChevronDown,
 //   FaGift,
 //   FaShippingFast,
+//   FaTimes,
 // } from "react-icons/fa";
 // import { BiSolidSlideshow } from "react-icons/bi";
 // import { TbCategoryFilled } from "react-icons/tb";
@@ -24,11 +25,13 @@
 // import { fetchSubAdmins } from "../redux/slices/Dashboard/SubAdmin/subAdminSlice";
 // import { getUsers } from "../redux/slices/auth/userSlice";
 
-// const Aside = () => {
-//   const [isExpanded, setIsExpanded] = useState(true);
+// const Aside = ({ isCollapsed, toggleCollapse }) => {
 //   const [openDropdown, setOpenDropdown] = useState(null);
 //   const [userId, setUserId] = useState();
+//   const [hovered, setHovered] = useState(false)
 //   const dispatch = useDispatch();
+
+//   const isTemporarilyExpanded = hovered;
 
 //   useEffect(() => {
 //     const userId = localStorage.getItem("AdminId");
@@ -43,7 +46,7 @@
 //   const { list } = useSelector((state) => state.subAdmins);
 //   const { users } = useSelector((state) => state.user);
 
-//   const cleanUserId = String(userId).replace(/[^a-zA-Z0-9]/g, ""); // removes ;, spaces, etc.
+//   const cleanUserId = String(userId).replace(/[^a-zA-Z0-9]/g, "");
 
 //   const findUser = users.find((user) => String(user._id) === cleanUserId);
 
@@ -54,7 +57,6 @@
 //     userRole = "sub-admin";
 //   }
 
-//   // Improved permissions check using state to ensure it's accessible throughout component
 //   const [hiddenSections, setHiddenSections] = useState([]);
 
 //   useEffect(() => {
@@ -67,7 +69,6 @@
 
 //         for (const [section, config] of Object.entries(permissions)) {
 //           if (typeof config === "object" && config !== null) {
-//             // Check if all values are false or the entire section should be hidden
 //             const allFalse = Object.values(config).every(
 //               (val) => val === false
 //             );
@@ -75,7 +76,6 @@
 //               sectionsToHide.push(section);
 //             }
 //           } else if (config === false) {
-//             // Handle boolean permissions directly
 //             sectionsToHide.push(section);
 //           }
 //         }
@@ -86,24 +86,19 @@
 //   }, [list, findUser, userRole]);
 
 //   const shouldShowItem = (item) => {
-//     // Super admin can see everything
 //     if (userRole === "super-admin") return true;
 
-//     // Check if this specific item's permission is in the hidden sections
 //     if (item.permission && hiddenSections.includes(item.permission)) {
 //       return false;
 //     }
 
-//     // If no permission is specified but has dropdown items
 //     if (!item.permission && item.dropdown) {
-//       // Show parent only if at least one child is visible
 //       return item.dropdown.some((subItem) => {
 //         if (!subItem.permission) return true;
 //         return !hiddenSections.includes(subItem.permission);
 //       });
 //     }
 
-//     // If no permission specified and no dropdown, show it
 //     return true;
 //   };
 
@@ -254,31 +249,48 @@
 
 //   return (
 //     <aside
-//       className={`bg-black fixed top-[5%] text-white h-screen ${
-//         isExpanded ? "w-56 me-[220px]" : "w-20"
-//       } transition-all duration-300 p-4 flex flex-col overflow-y-auto`}
+//       className={`bg-black fixed aside text-white h-screen ${
+//         isCollapsed ? "w-19" : "w-55"
+//       } transition-all duration-300 overflow-y-auto flex flex-col z-50`}
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
 //     >
-//       <nav className="flex flex-col pt-15 space-y-2 text-[12px] font-bold">
+//       {/* Toggle Button */}
+//       <div
+//         className={`pt-5 ps-1 flex ${
+//           isCollapsed ? "justify-center" : "justify-start ps-2"
+//         } items-center border-b border-gray-700`}
+//       >
+//         <button
+//           onClick={toggleCollapse}
+//           className="p-4 cursor-pointer text-left"
+//         >
+//           {isCollapsed ? <FaTimes size={20} /> : <FaBars size={20} />}
+//         </button>
+//         {!isCollapsed && <span className="font-bold">Admin Panel</span>}
+//       </div>
+
+//       <nav className="flex flex-col pt-2 space-y-2 text-[12px] font-bold p-4">
 //         {menuItems.filter(shouldShowItem).map((item) => (
 //           <div key={item.id}>
 //             <SidebarItem
 //               icon={item.icon}
 //               label={item.label}
-//               isExpanded={isExpanded}
+//               isCollapsed={isCollapsed}
 //               hasDropdown={!!item.dropdown}
 //               isOpen={openDropdown === item.id}
 //               toggleDropdown={() => toggleDropdown(item.id)}
 //               link={item.link}
 //               dropdown={item.dropdown?.filter(shouldShowItem)}
 //             />
-//             {item.dropdown && openDropdown === item.id && isExpanded && (
+//             {item.dropdown && openDropdown === item.id && !isCollapsed && (
 //               <div className="ml-3">
 //                 {item.dropdown.filter(shouldShowItem).map((subItem) => (
 //                   <SidebarItem
 //                     key={subItem.id}
 //                     icon={subItem.icon}
 //                     label={subItem.label}
-//                     isExpanded={isExpanded}
+//                     isCollapsed={isCollapsed}
 //                     isSubItem
 //                     link={subItem.link}
 //                   />
@@ -291,10 +303,11 @@
 //     </aside>
 //   );
 // };
+
 // const SidebarItem = ({
 //   icon,
 //   label,
-//   isExpanded,
+//   isCollapsed,
 //   hasDropdown,
 //   isOpen,
 //   toggleDropdown,
@@ -303,14 +316,8 @@
 //   dropdown,
 // }) => {
 //   const location = useLocation();
-
-//   // Convert relative links to absolute paths
 //   const fullLink = link ? `/${link}` : "#";
-
-//   // Check if current item is active
 //   const isActive = location.pathname === fullLink;
-
-//   // Check if any dropdown item is active (for parent items)
 //   const isDropdownActive =
 //     hasDropdown &&
 //     dropdown?.some((sub) => location.pathname.startsWith(`/${sub.link}`));
@@ -318,24 +325,26 @@
 //   return (
 //     <div>
 //       <Link
-//         to={hasDropdown ? "#" : fullLink} // Prevent navigation for dropdown parent
+//         to={hasDropdown ? "#" : fullLink}
 //         className={`flex items-center p-3 my-1 rounded-lg transition-all cursor-pointer
 //                     ${
 //                       isActive || isDropdownActive
 //                         ? "bg-blue-600 text-white"
 //                         : "hover:bg-gray-700"
 //                     }
-//                     ${hasDropdown && isOpen ? "bg-gray-800" : ""}`}
+//                     ${hasDropdown && isOpen ? "bg-gray-800" : ""}
+//                     ${isSubItem ? "pl-5" : ""}`}
 //         onClick={(e) => {
 //           if (hasDropdown) {
-//             e.preventDefault(); // Prevent navigation when toggling dropdown
+//             e.preventDefault();
 //             toggleDropdown();
 //           }
 //         }}
+//         title={!isCollapsed ? label : ""} // Show tooltip when collapsed
 //       >
 //         <span className="text-xl">{icon}</span>
-//         {isExpanded && <span className="ml-3 flex-grow">{label}</span>}
-//         {hasDropdown && isExpanded && (
+//         {!isCollapsed && <span className="ml-3 flex-grow">{label}</span>}
+//         {hasDropdown && !isCollapsed && (
 //           <FaChevronDown
 //             className={`transition-transform duration-300 ${
 //               isOpen ? "rotate-180" : ""
@@ -347,9 +356,9 @@
 //   );
 // };
 
-// // export default Aside;
-
 // export default Aside;
+
+
 
 import React, { useEffect, useState } from "react";
 import {
@@ -381,10 +390,11 @@ import { getUsers } from "../redux/slices/auth/userSlice";
 const Aside = ({ isCollapsed, toggleCollapse }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [userId, setUserId] = useState();
-  const [hovered, setHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
   const dispatch = useDispatch();
 
-  const isTemporarilyExpanded = hovered;
+  // Only show expanded state when hovered AND collapsed
+  const shouldShowExpanded = isCollapsed && isHovered;
 
   useEffect(() => {
     const userId = localStorage.getItem("AdminId");
@@ -603,24 +613,24 @@ const Aside = ({ isCollapsed, toggleCollapse }) => {
   return (
     <aside
       className={`bg-black fixed aside text-white h-screen ${
-        isCollapsed ? "w-19" : "w-55"
+        isCollapsed && !isHovered ? "w-19" : "w-55"
       } transition-all duration-300 overflow-y-auto flex flex-col z-50`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Toggle Button */}
       <div
         className={`pt-5 ps-1 flex ${
-          isCollapsed ? "justify-center" : "justify-start ps-2"
+          isCollapsed && !isHovered ? "justify-center" : "justify-start ps-2"
         } items-center border-b border-gray-700`}
       >
         <button
           onClick={toggleCollapse}
           className="p-4 cursor-pointer text-left"
         >
-          {isCollapsed ? <FaTimes size={20} /> : <FaBars size={20} />}
+          {isCollapsed && !isHovered ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
-        {!isCollapsed && <span className="font-bold">Admin Panel</span>}
+        {(!isCollapsed || isHovered) && <span className="font-bold">Admin Panel</span>}
       </div>
 
       <nav className="flex flex-col pt-2 space-y-2 text-[12px] font-bold p-4">
@@ -629,21 +639,22 @@ const Aside = ({ isCollapsed, toggleCollapse }) => {
             <SidebarItem
               icon={item.icon}
               label={item.label}
-              isCollapsed={isCollapsed}
+              isCollapsed={isCollapsed && !isHovered}
               hasDropdown={!!item.dropdown}
               isOpen={openDropdown === item.id}
               toggleDropdown={() => toggleDropdown(item.id)}
               link={item.link}
               dropdown={item.dropdown?.filter(shouldShowItem)}
+              isHoverExpanded={isHovered && isCollapsed}
             />
-            {item.dropdown && openDropdown === item.id && !isCollapsed && (
+            {item.dropdown && openDropdown === item.id && (!isCollapsed || isHovered) && (
               <div className="ml-3">
                 {item.dropdown.filter(shouldShowItem).map((subItem) => (
                   <SidebarItem
                     key={subItem.id}
                     icon={subItem.icon}
                     label={subItem.label}
-                    isCollapsed={isCollapsed}
+                    isCollapsed={isCollapsed && !isHovered}
                     isSubItem
                     link={subItem.link}
                   />
@@ -667,6 +678,7 @@ const SidebarItem = ({
   isSubItem,
   link,
   dropdown,
+  isHoverExpanded,
 }) => {
   const location = useLocation();
   const fullLink = link ? `/${link}` : "#";
@@ -693,7 +705,7 @@ const SidebarItem = ({
             toggleDropdown();
           }
         }}
-        title={!isCollapsed ? label : ""} // Show tooltip when collapsed
+        title={isCollapsed ? label : ""} // Show tooltip only when collapsed
       >
         <span className="text-xl">{icon}</span>
         {!isCollapsed && <span className="ml-3 flex-grow">{label}</span>}
